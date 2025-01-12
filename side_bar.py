@@ -32,7 +32,7 @@ def load_sidebar() -> None:
                                                            key="side_bar_load_portfolio",
                                                            on_click=tools.click_button_port)
 
-    portfo_tab.markdown("""You can create a portfolio with a maximum of :green[10] investments.""")
+   # portfo_tab.markdown("""You can create a portfolio with a maximum of :green[10] investments.""")
 
     # Model tab
     model_tab.title("Risk Model Building")
@@ -41,7 +41,7 @@ def load_sidebar() -> None:
                                                          key="main_page_run_simulation",
                                                          on_click=tools.click_button_sim)
 
-    model_tab.markdown(""" :green[VaR (Value at Risk)]: Think of VaR as a safety net, indicating the maximum potential loss within a confidence level.""")
+    # model_tab.markdown(""" :green[VaR (Value at Risk)]: Think of VaR as a safety net, indicating the maximum potential loss within a confidence level.""")
 
     # Prediction Tab
     pred_tab.title("Stock Prediction")
@@ -98,7 +98,7 @@ def train_predict_stock(ticker: str):
     model.add(Dense(units=1))
     model.compile(optimizer='adam', loss='mean_squared_error')
 
-    model.fit(x, y, epochs=1, batch_size=1, verbose=2)
+    model.fit(x, y, epochs=5, batch_size=1, verbose=2)
 
     # Predict next 15 days
     last_100_days = scaled_data[-100:]
@@ -116,7 +116,9 @@ def train_predict_stock(ticker: str):
 
     # Create dataframe for predictions
     future_dates = pd.date_range(start=data.index[-1], periods=16, freq='D')[1:]
+    future_dates = future_dates.strftime('%Y-%m-%d')
     df_predictions = pd.DataFrame(predictions, columns=['Predicted Price'], index=future_dates)
+    
     
     return predictions, df_predictions
 

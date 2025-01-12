@@ -9,6 +9,12 @@ import pandas as pd
 from assets import Portfolio
 from assets import Stock
 import plotly.express as px
+import json
+import os
+
+
+
+
 
 
 def create_state_variable(key: str, default_value: any) -> None:
@@ -43,10 +49,15 @@ def create_date_input(
 
 
 def get_stock_demo_data(no_stocks: int) -> list:
-    stock_name_list = ['AAPL', 'TSLA', 'GOOG', 'MSFT',
-                       'AMZN', 'META', 'NVDA', 'PYPL',
-                       'NFLX', 'ADBE', 'INTC', 'CSCO', ]
+    stock_name_list = [
+        'AAPL', 'TSLA', 'GOOG', 'MSFT', 'AMZN', 'META', 'NVDA', 'PYPL',
+        'NFLX', 'ADBE', 'INTC', 'CSCO', 'ORCL', 'IBM', 'QCOM', 'TXN',
+        'AMD', 'SPOT', 'BABA', 'DIS', 'PEP', 'KO', 'V', 'MA', 'WMT',
+        'T', 'CRM', 'COST', 'XOM', 'JNJ'
+    ]
     return stock_name_list[:no_stocks]
+
+
 
 
 def click_button_sim() -> None:
@@ -284,21 +295,56 @@ def create_metric_card(label: str, value: str, delta: str) -> None:
     style_metric_cards(background_color=background_color)
 
 
-def create_pie_chart(key_values: dict) -> None:
+
+
+def create_pie_chart(key_values: dict, save_to: str = None, chart_key: str = None) -> str:
+    """
+    Creates a pie chart using Plotly.
+
+    Parameters:
+    - key_values (dict): A dictionary with labels as keys and values as the corresponding values for the pie chart.
+    - save_to (str): Path to save the chart as an image. If None, the chart is not saved.
+    - chart_key (str): Unique key for Streamlit to avoid duplicate element IDs.
+
+    Returns:
+    - str: Path to the saved image file if saved, otherwise None.
+    """
     labels = list(key_values.keys())
     values = list(key_values.values())
 
-    # Use `hole` to create a donut-like pie chart
-    fig = go.Figure(data=[go.Pie(labels=labels, values=values, textinfo='label+percent',
-                                 insidetextorientation='radial'
-                                 )],
-                    )
-    # do not show legend
-    fig.update_layout(xaxis_rangeslider_visible=False,
-                      margin=dict(l=20, r=20, t=20, b=20),
-                      showlegend=False)
+    # Create a pie chart
+    fig = go.Figure(data=[
+        go.Pie(
+            labels=labels,
+            values=values,
+            textinfo='label+percent',
+            insidetextorientation='radial'
+        )
+    ])
 
-    st.plotly_chart(fig, use_container_width=True, use_container_height=True)
+    # Update layout for better visualization
+    fig.update_layout(
+        xaxis_rangeslider_visible=False,
+        margin=dict(l=20, r=20, t=20, b=20),
+        showlegend=False
+    )
+
+    # Save the chart to a file if `save_to` is specified
+    if save_to:
+        # Ensure the save directory exists
+        os.makedirs(os.path.dirname(save_to), exist_ok=True)
+
+        # Save the chart as a static image
+        try:
+            fig.write_image(save_to, format="png")
+            return save_to
+        except Exception as e:
+            print(f"Error saving pie chart: {e}")
+
+    # Display the chart in Streamlit with a unique key
+    st.plotly_chart(fig, use_container_width=True, use_container_height=True, key=chart_key)
+
+    return None
 
 
 def create_line_chart(portfolio_df: pd.DataFrame) -> None:
