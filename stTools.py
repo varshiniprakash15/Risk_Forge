@@ -83,21 +83,31 @@ def preview_stock(
     color = None
 
     # get price difference of close
-    diff_price = stock_data.iloc[-1]['Close'] - stock_data.iloc[0]['Close']
+    #diff_price = stock_data.iloc[-1]['Close'] - stock_data.iloc[0]['Close']
+    if not stock_data.empty:
+        last_close = stock_data['Close'].iloc[-1].item()  # Ensure float
+        first_close = stock_data['Close'].iloc[0].item()  # Ensure float
+        diff_price = last_close - first_close
+    else:
+        last_close = first_close = diff_price = 0  # Handle empty data case
+
+    color = None
     if diff_price > 0.0:
         color = '#00fa119e'
     elif diff_price < 0.0:
         color = '#fa00009e'
 
-    # change index form 0 to end
+# Change index for plotting
     stock_data['day(s) since buy'] = range(0, len(stock_data))
 
+# Use scalar values in f-strings
     create_metric_card(label=st.session_state[session_state_name],
-                       value=f"{stock_data.iloc[-1]['Close']: .2f}",
-                       delta=f"{diff_price: .2f}")
+                    value=f"{last_close:.2f}",
+                    delta=f"{diff_price:.2f}")
 
     st.area_chart(stock_data, use_container_width=True,
-                  height=250, width=250, color=color, x='day(s) since buy')
+                height=250, width=250, color=color, x='day(s) since buy')
+
 
 
 def format_currency(number: float) -> str:

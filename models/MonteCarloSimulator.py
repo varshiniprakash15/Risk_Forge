@@ -3,6 +3,7 @@ import numpy as np
 from numpy import ndarray
 from assets import Portfolio
 from assets.Collector import InfoCollector
+import pandas as pd
 
 
 class Monte_Carlo_Simulator:
@@ -30,8 +31,11 @@ class Monte_Carlo_Simulator:
         stocks_data = stocks_data['Close'].dropna()
 
         pct_return = stocks_data.pct_change().dropna()
-        self.pct_mean_return = pct_return.mean()
-        self.pct_cov_matrix = pct_return.cov()
+        if isinstance(pct_return, pd.DataFrame):
+            self.pct_mean_return = pct_return.mean()
+            self.pct_cov_matrix = pct_return.cov()
+        else:
+            print("Error: pct_return is not a DataFrame.")
 
         self.init_cash = portfolio.book_amount
         self._get_weights(portfolio)

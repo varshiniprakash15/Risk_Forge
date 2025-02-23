@@ -1,9 +1,6 @@
 import streamlit as st
 import stTools as tools
 import pandas as pd
-import json
-import os
-
 
 
 def load_portfolio_performance_cards(
@@ -91,17 +88,3 @@ def load_portfolio_preview(no_stocks: int) -> None:
             tools.preview_stock(f"stock_{i + 1}_name",
                                 start_date=st.session_state[f"stock_{i + 1}_purchase_date"])
         columns_no += 1
-
-
-def load_portfolio_summary_pie() -> None:
-    st.subheader("Portfolio Distribution")
-    book_cost_list = {}
-    for stock in st.session_state.my_portfolio.stocks.values():
-        book_cost_list[stock.stock_name] = stock.get_book_cost()
-
-    # Create pie chart and display
-    pie_chart_image_path = None  # Initially set to None, if saving is not required
-    pie_chart_image_path = tools.create_pie_chart(book_cost_list, save_to=pie_chart_image_path)
-
-    if pie_chart_image_path:
-        st.image(pie_chart_image_path, use_column_width=True)
